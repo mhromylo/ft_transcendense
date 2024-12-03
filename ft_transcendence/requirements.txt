@@ -1,0 +1,7 @@
+django
+djangorestframework
+channels
+channels-redis
+psycopg2-binary
+redis
+dj-database-url
