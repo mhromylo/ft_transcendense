@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Edit Profile</h5>
+        <form action="{% url 'update_profile' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="displayName" class="form-label">Display Name</label>
+                <input type="text" class="form-control" id="displayName" name="display_name" value="{{ user.display_name }}">
+            </div>
+            <div class="mb-3">
+                <label for="avatar" class="form-label">Avatar</label>
+                <input type="file" class="form-control" id="avatar" name="avatar">
+                <img id="avatarPreview" src="{{ user.avatar.url if user.avatar else '/static/images/default-avatar.png' }}"
+                    alt="Avatar Preview" class="img-thumbnail mt-3" style="width: 150px; height: 150px;">
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const avatarInput = document.getElementById('avatar');
+        const avatarPreview = document.getElementById('avatarPreview');
+
+        avatarInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    avatarPreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+

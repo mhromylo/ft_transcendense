@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Game Info -->
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Game Details</h5>
+                <p>Status: <span class="badge bg-info">{{ game.get_status_display }}</span></p>
+                <p>Start Time: {{ game.start_time }}</p>
+                <p>End Time: {{ game.end_time }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Stats -->
+   <div class="col-md-6">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Players and Scores</h5>
+            <button id="toggleScores" class="btn btn-outline-primary mb-3">Show/Hide Scores</button>
+            <table id="scoresTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Avatar</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in game.players.all %}
+                    <tr>
+                        <td>
+                            <span data-bs-toggle="tooltip" title="Games Played: {{ player.games_played }}">
+                                {{ player.display_name }}
+                            </span>
+                        </td>
+                        <td>
+                            <img src="{{ player.avatar.url }}" alt="Player Avatar">
+                        </td>
+                        <td>{{ game_data.scores }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Match History</h5>
+        <button id="loadHistory" class="btn btn-primary">Load Match History</button>
+        <ul id="matchHistory" class="list-group mt-3"></ul>
+    </div>
+</div>
+</div>
+{% endblock %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const loadHistoryButton = document.getElementById('loadHistory');
+        const matchHistoryList = document.getElementById('matchHistory');
+
+        loadHistoryButton.addEventListener('click', () => {
+            fetch('/api/match-history/')
+                .then(response => response.json())
+                .then(data => {
+                    matchHistoryList.innerHTML = '';
+                    data.forEach(match => {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'list-group-item';
+                        listItem.textContent = `Match ID: ${match.id}, Date: ${match.date}, Players: ${match.players.join(', ')}`;
+                        matchHistoryList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error loading match history:', error));
+        });
+    });
+</script>
+
