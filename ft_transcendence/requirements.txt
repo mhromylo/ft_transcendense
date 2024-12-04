@@ -6,4 +6,4 @@ psycopg2-binary
 redis
 dj-database-url
 Pillow>=8.0.0
-
+djangorestframework-simplejwt
